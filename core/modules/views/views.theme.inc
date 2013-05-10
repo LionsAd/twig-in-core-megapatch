@@ -13,7 +13,7 @@ use Drupal\views\ViewExecutable;
  *
  * @param $hook
  *   The hook to use. This is the base theme/template name.
- * @param $view
+ * @param Drupal\views\ViewExecutable $view
  *   The view being rendered.
  * @param $display
  *   The display being rendered, if applicable.
@@ -40,14 +40,21 @@ function _views_theme_functions($hook, ViewExecutable $view, $display = NULL) {
 }
 
 /**
- * Preprocess the primary theme implementation for a view.
+ * Prepares variables for view templates.
+ *
+ * Default template: views-view.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - view: The view object.
+ *   - directory: The location of the Views module.
  */
 function template_preprocess_views_view(&$vars) {
   global $base_path;
 
   $view = $vars['view'];
 
-  $vars['rows'] = (!empty($view->result) || $view->style_plugin->even_empty()) ? $view->style_plugin->render($view->result) : '';
+  $vars['rows'] = (!empty($view->result) || $view->style_plugin->even_empty()) ? $view->style_plugin->render($view->result) : array();
   // Force a render array so CSS/JS can be added.
   if (!is_array($vars['rows'])) {
     $vars['rows'] = array('#markup' => $vars['rows']);
@@ -72,10 +79,10 @@ function template_preprocess_views_view(&$vars) {
     $vars['attributes']['class'][] = $vars['css_class'];
   }
 
-  $empty = empty($view->result);
-  $vars['header'] = $view->display_handler->renderArea('header', $empty);
-  $vars['footer'] = $view->display_handler->renderArea('footer', $empty);
-  $vars['empty'] = $empty ? $view->display_handler->renderArea('empty', $empty) : FALSE;
+  $empty_message = empty($view->result);
+  $vars['header'] = $view->display_handler->renderArea('header', $empty_message);
+  $vars['footer'] = $view->display_handler->renderArea('footer', $empty_message);
+  $vars['empty_message'] = $empty_message ? $view->display_handler->renderArea('empty', $empty_message) : FALSE;
 
   $vars['exposed']    = !empty($view->exposed_widgets) ? $view->exposed_widgets : '';
   $vars['more']       = $view->display_handler->renderMoreLink();
@@ -110,21 +117,21 @@ function template_preprocess_views_view(&$vars) {
   // attached to an array (not an object) in order to process them. For our
   // purposes, it doesn't matter what we attach them to, since once they are
   // processed by contextual_preprocess() they will appear in the $title_suffix
-  // variable (which we will then render in views-view.tpl.php).
+  // variable (which we will then render in views-view.html.twig).
   views_add_contextual_links($vars['view_array'], 'view', $view, $view->current_display);
 
   // Attachments are always updated with the outer view, never by themselves,
   // so they do not have dom ids.
   if (empty($view->is_attachment)) {
-    // Our JavaScript needs to have some means to find the HTML belonging to this
-    // view.
+    // Our JavaScript needs to have some means to find the HTML belonging to
+    // this view.
     //
     // It is true that the DIV wrapper has classes denoting the name of the view
     // and its display ID, but this is not enough to unequivocally match a view
     // with its HTML, because one view may appear several times on the page. So
-    // we set up a hash with the current time, $dom_id, to issue a "unique" identifier for
-    // each view. This identifier is written to both Drupal.settings and the DIV
-    // wrapper.
+    // we set up a hash with the current time, $dom_id, to issue a "unique"
+    // identifier for each view. This identifier is written to both
+    // Drupal.settings and the DIV wrapper.
     $vars['dom_id'] = $view->dom_id;
     $vars['attributes']['class'][] = 'view-dom-id-' . $vars['dom_id'];
   }
@@ -153,12 +160,12 @@ function template_preprocess_views_view(&$vars) {
     $view->element['#attached']['library'][] = array('views', 'views.ajax');
   }
 
-  // If form fields were found in the View, reformat the View output as a form.
+  // If form fields were found in the view, reformat the view output as a form.
   if (views_view_has_form_elements($view)) {
     // Copy the rows so as not to modify them by reference when rendering.
     $rows = $vars['rows'];
     $rows = drupal_render($rows);
-    $output = !empty($rows) ? $rows : $vars['empty'];
+    $output = !empty($rows) ? $rows : $vars['empty_message'];
     $form = drupal_get_form(views_form_id($view), $view, $output);
     // The form is requesting that all non-essential views elements be hidden,
     // usually because the rendered step is not a view result.
@@ -1014,7 +1021,7 @@ function template_preprocess_views_exposed_form(&$vars) {
 }
 
 /**
- * Theme function for a View with form elements: replace the placeholders.
+ * Theme function for a view with form elements: replace the placeholders.
  */
 function theme_views_form_views_form($variables) {
   $form = $variables['form'];
@@ -1108,12 +1115,12 @@ function theme_views_mini_pager($vars) {
 /**
  * @defgroup views_templates Views template files
  * @{
- * All views templates can be overridden with a variety of names, using
+ * All Views templates can be overridden with a variety of names, using
  * the view, the display ID of the view, the display type of the view,
  * or some combination thereof.
  *
  * For each view, there will be a minimum of two templates used. The first
- * is used for all views: views-view.tpl.php.
+ * is used for all views: views-view.html.twig.
  *
  * The second template is determined by the style selected for the view. Note
  * that certain aspects of the view can also change which style is used; for
@@ -1133,7 +1140,7 @@ function theme_views_mini_pager($vars) {
  * - views-view--foobar--page.tpl.php
  * - views-view--page.tpl.php
  * - views-view--foobar.tpl.php
- * - views-view.tpl.php
+ * - views-view.html.twig
  *
  * - views-view-unformatted--foobar--page.tpl.php
  * - views-view-unformatted--page.tpl.php
