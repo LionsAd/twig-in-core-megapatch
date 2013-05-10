@@ -1125,7 +1125,7 @@ function template_process_field(&$variables, $hook) {
  * functions may copy the "field.tpl.php" from the "modules/field/theme" folder
  * of the Drupal installation to somewhere within the theme's folder and
  * customize it, just like customizing other Drupal templates such as
- * page.tpl.php or node.tpl.php. However, it takes longer for the server to
+ * page.tpl.php or node.html.twig. However, it takes longer for the server to
  * process templates than to call a function, so for websites with many fields
  * displayed on a page, this can result in a noticeable slowdown of the website.
  * For these websites, developers are discouraged from placing a field.tpl.php
