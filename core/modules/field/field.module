@@ -1003,12 +1003,31 @@ function field_page_build(&$page) {
   $page['#attached']['css'][$path . '/theme/field.css'] = array('every_page' => TRUE);
 }
 
-/**
- * Theme preprocess function for theme_field() and field.tpl.php.
- *
- * @see theme_field()
- * @see field.tpl.php
- */
+ /**
+  * Prepares variables for field templates.
+  *
+  * Default template: field.html.twig.
+  *
+  * To override output, copy the "field.html.twig" from the templates directory
+  * to your theme's directory and customize it, just like customizing other
+  * Drupal templates such as page.html.twig or node.html.twig.
+  *
+  * For example, for a field named 'body' displayed on the 'article'
+  * content type, any of the following templates will override this default
+  * implementation. The first of these templates that exists is used:
+  * - field--body--article.html.twig
+  * - field--article.html.twig
+  * - field--body.html.twig
+  * - field.html.twig
+  *
+  * @param array $variables
+  *   An associative array containing:
+  *   - element: A render element representing the field.
+  *   - attributes: A string containing the attributes for the wrapping div.
+  *   - title_attributes: A string containing the attributes for the title.
+  *   - content_attributes: A string containing the attributes for the content's
+  *     div.
+  */
 function template_preprocess_field(&$variables, $hook) {
   $element = $variables['element'];
 
