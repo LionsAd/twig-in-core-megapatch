@@ -297,9 +297,14 @@ function theme_aggregator_summary_item($variables) {
 }
 
 /**
- * Processes variables for aggregator-item.tpl.php.
+ * Prepares variables for aggregator item templates.
  *
- * @see aggregator-item.tpl.php
+ * Default template: aggregator-item.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - aggregator_item: An individual feed item for display on the aggregator
+ *     page.
  */
 function template_preprocess_aggregator_item(&$variables) {
   $item = $variables['aggregator_item'];
@@ -531,9 +536,14 @@ function theme_aggregator_page_opml($variables) {
 }
 
 /**
- * Processes variables for aggregator-summary-items.tpl.php.
+ * Prepares variables for aggregator summary templates.
  *
- * @see aggregator-summary-items.tpl.php
+ * Default template: aggregator-summary-items.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - source: Information about the feed source.
+ *   - summary_items: An array of feed items.
  */
 function template_preprocess_aggregator_summary_items(&$variables) {
   $variables['title'] = check_plain($variables['source'] instanceof EntityInterface ? $variables['source']->label() : $variables['source']->title);
@@ -572,9 +582,13 @@ function template_preprocess_aggregator_summary_item(&$variables) {
 }
 
 /**
- * Processes variables for aggregator-feed-source.tpl.php.
+ * Prepares variables for aggregator feed source templates.
  *
- * @see aggregator-feed-source.tpl.php
+ * Default template: aggregator-feed-source.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - aggregator_feed: Information about the feed source.
  */
 function template_preprocess_aggregator_feed_source(&$variables) {
   $feed = $variables['aggregator_feed'];
