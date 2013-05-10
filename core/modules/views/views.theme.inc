@@ -312,8 +312,20 @@ function theme_views_view_grouping($vars) {
 }
 
 /**
- * Process a single grouping within a view.
- */
+ * Prepares variables for views single grouping templates.
+ *
+ * Default template: views-view-grouping.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - view: The view object.
+ *   - rows: The rows returned from the view.
+ *   - grouping_level: Integer indicating the hierarchical level of the
+ *     grouping.
+ *   - content: The content to be grouped. This is set via aggregation settings
+ *     on the view.
+ *   - title: The group heading.
+  */
 function template_preprocess_views_view_grouping(&$vars) {
   $vars['content'] = $vars['view']->style_plugin->render_grouping_sets($vars['rows'], $vars['grouping_level']);
 }
