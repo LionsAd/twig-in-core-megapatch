@@ -154,10 +154,10 @@ class ThemeTest extends WebTestBase {
     $this->assertIdentical($themes['test_basetheme']->sub_themes, $sub_theme_list, 'Base theme\'s object includes list of subthemes.');
     $this->assertIdentical($themes['test_subtheme']->base_themes, $base_theme_list, 'Subtheme\'s object includes list of base themes.');
     // Check for theme engine in subtheme.
-    $this->assertIdentical($themes['test_subtheme']->engine, 'phptemplate', 'Subtheme\'s object includes the theme engine.');
+    $this->assertIdentical($themes['test_subtheme']->engine, 'twig', 'Subtheme\'s object includes the theme engine.');
     // Check for theme engine prefix.
-    $this->assertIdentical($themes['test_basetheme']->prefix, 'phptemplate', 'Base theme\'s object includes the theme engine prefix.');
-    $this->assertIdentical($themes['test_subtheme']->prefix, 'phptemplate', 'Subtheme\'s object includes the theme engine prefix.');
+    $this->assertIdentical($themes['test_basetheme']->prefix, 'twig', 'Base theme\'s object includes the theme engine prefix.');
+    $this->assertIdentical($themes['test_subtheme']->prefix, 'twig', 'Subtheme\'s object includes the theme engine prefix.');
   }
 
   /**
