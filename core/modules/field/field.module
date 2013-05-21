@@ -985,10 +985,17 @@ function field_page_build(&$page) {
 }
 
 /**
- * Theme preprocess function for theme_field() and field.tpl.php.
+ * Prepares variables for field templates.
  *
- * @see theme_field()
- * @see field.tpl.php
+ * Default template: field.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - element: A render element representing the field.
+ *   - attributes: A string containing the attributes for the wrapping div.
+ *   - title_attributes: A string containing the attributes for the title.
+ *   - content_attributes: A string containing the attributes for the content's
+ *     div.
  */
 function template_preprocess_field(&$variables, $hook) {
   $element = $variables['element'];
@@ -1008,10 +1015,19 @@ function template_preprocess_field(&$variables, $hook) {
   // those keys is faster than calling element_children() or looping on all keys
   // within $element, since that requires traversal of all element properties.
   $variables['items'] = array();
+  $variables['item_attributes'] = array();
   foreach ($element['#items'] as $delta => $item) {
     if (!empty($element[$delta])) {
       $variables['items'][$delta] = $element[$delta];
+      $variables['item_attributes'][$delta] = new Attribute(array('class' => array('field-item')));
     }
+  }
+
+  // Map odd/even classes.
+  // @todo Remove after http://drupal.org/node/1649780 lands.
+  $i = 1;
+  foreach ($variables['item_attributes'] as $delta => $item_attributes) {
+    $variables['item_attributes'][$delta]['class'][] = ++$i % 2 == 0 ? 'even' : 'odd';
   }
 
   // Add default CSS classes. Since there can be many fields rendered on a page,
@@ -1038,13 +1054,16 @@ function template_preprocess_field(&$variables, $hook) {
     'field__' . $element['#bundle'],
     'field__' . $element['#field_name'] . '__' . $element['#bundle'],
   );
+
+  $variables['title_attributes']['class'][] = 'field-label';
+  $variables['content_attributes']['class'][] = 'field-items';
 }
 
 /**
- * Theme process function for theme_field() and field.tpl.php.
+ * Theme process function for theme_field() and field.html.twig.
  *
  * @see theme_field()
- * @see field.tpl.php
+ * @see field.html.twig
  */
 function template_process_field(&$variables, $hook) {
   static $default_attributes;
@@ -1084,23 +1103,23 @@ function template_process_field(&$variables, $hook) {
  * - THEMENAME_field()
  *
  * Theme developers who prefer to customize templates instead of overriding
- * functions may copy the "field.tpl.php" from the "modules/field/theme" folder
- * of the Drupal installation to somewhere within the theme's folder and
+ * functions may copy the "field.html.twig" from the "modules/field/theme"
+ * folder of the Drupal installation to somewhere within the theme's folder and
  * customize it, just like customizing other Drupal templates such as
- * page.tpl.php or node.tpl.php. However, it takes longer for the server to
+ * page.html.twig or node.html.twig. However, it takes longer for the server to
  * process templates than to call a function, so for websites with many fields
  * displayed on a page, this can result in a noticeable slowdown of the website.
- * For these websites, developers are discouraged from placing a field.tpl.php
+ * For these websites, developers are discouraged from placing a field.html.twig
  * file into the theme's folder, but may customize templates for specific
  * fields. For example, for a field named 'body' displayed on the 'article'
  * content type, any of the following templates will override this default
  * implementation. The first of these templates that exists is used:
- * - field--body--article.tpl.php
- * - field--article.tpl.php
- * - field--body.tpl.php
- * - field.tpl.php
+ * - field--body--article.html.twig
+ * - field--article.html.twig
+ * - field--body.html.twig
+ * - field.html.twig
  * So, if the body field on the article content type needs customization, a
- * field--body--article.tpl.php file can be added within the theme's folder.
+ * field--body--article.html.twig file can be added within the theme's folder.
  * Because it's a template, it will result in slightly more time needed to
  * display that field, but it will not impact other fields, and therefore, is
  * unlikely to cause a noticeable change in website performance. A very rough
@@ -1125,7 +1144,7 @@ function template_process_field(&$variables, $hook) {
  *
  * @see template_preprocess_field()
  * @see template_process_field()
- * @see field.tpl.php
+ * @see field.html.twig
  *
  * @ingroup themeable
  */
@@ -1134,14 +1153,13 @@ function theme_field($variables) {
 
   // Render the label, if it's not hidden.
   if (!$variables['label_hidden']) {
-    $output .= '<div class="field-label"' . $variables['title_attributes'] . '>' . $variables['label'] . '</div>';
+    $output .= '<div' . $variables['title_attributes'] . '>' . $variables['label'] . '</div>';
   }
 
   // Render the items.
-  $output .= '<div class="field-items"' . $variables['content_attributes'] . '>';
+  $output .= '<div' . $variables['content_attributes'] . '>';
   foreach ($variables['items'] as $delta => $item) {
-    $classes = 'field-item ' . ($delta % 2 ? 'odd' : 'even');
-    $output .= '<div class="' . $classes . '"' . $variables['item_attributes'][$delta] . '>' . drupal_render($item) . '</div>';
+    $output .= '<div' . $variables['item_attributes'][$delta] . '>' . drupal_render($item) . '</div>';
   }
   $output .= '</div>';
 
