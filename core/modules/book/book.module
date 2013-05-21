@@ -948,7 +948,7 @@ function _book_link_defaults($nid) {
 }
 
  /**
- * Implements hook_preprocess_HOOK() for block.tpl.php.
+ * Implements hook_preprocess_HOOK() for block.html.twig.
  */
 function book_preprocess_block(&$variables) {
   if ($variables['configuration']['module'] == 'book') {
@@ -957,7 +957,7 @@ function book_preprocess_block(&$variables) {
 }
 
 /**
- * Processes variables for book-all-books-block.tpl.php.
+ * Processes variables for book-all-books-block.html.twig.
  *
  * All non-renderable elements are removed so that the template has full access
  * to the structured data but can also simply iterate over all elements and
@@ -967,7 +967,7 @@ function book_preprocess_block(&$variables) {
  *   An associative array containing the following key:
  *   - book_menus
  *
- * @see book-all-books-block.tpl.php
+ * @see book-all-books-block.html.twig
  */
 function template_preprocess_book_all_books_block(&$variables) {
   // Remove all non-renderable elements.
